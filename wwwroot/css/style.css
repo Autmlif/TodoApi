@@ -28,6 +28,20 @@ h1 {
     color: #444;
 }
 
+.card {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    padding: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
 /* 输入区域 */
 .input-group {
     display: flex;

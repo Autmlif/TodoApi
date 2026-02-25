@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Repository;
 using TodoApi.Service;
+using log4net;
+using log4net.Config;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
