@@ -48,6 +48,19 @@
                 </div>
             </div>
 
+
+            <!-- 删除确认对话框 -->
+            <div id="delete-modal" class="modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+                <div class="modal-card">
+                    <h5 id="delete-modal-title" class="mb-2">确认删除</h5>
+                    <p class="text-muted mb-3">确定要删除这个 Todo 吗？此操作不可撤销。</p>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" type="button" onclick="closeDeleteModal()">取消</button>
+                        <button class="btn btn-danger" type="button" onclick="confirmDeleteTodo()">删除</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

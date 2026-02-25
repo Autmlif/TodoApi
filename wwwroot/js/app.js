@@ -1,5 +1,6 @@
 ﻿const uri = 'http://localhost:5203/todo'; 
 let todos = [];
+let pendingDeleteId = null;
 
 // 页面加载时获取数据
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,16 +85,29 @@ async function addTodo() {
     }
 }
 
-// 删除任务
-async function deleteTodo(id) {
-    if (!confirm('确定要删除吗？')) return;
+// 打开删除确认弹窗
+function deleteTodo(id) {
+    pendingDeleteId = id;
+    document.getElementById('delete-modal').classList.remove('d-none');
+}
+
+// 关闭删除确认弹窗
+function closeDeleteModal() {
+    pendingDeleteId = null;
+    document.getElementById('delete-modal').classList.add('d-none');
+}
+
+// 确认删除任务
+async function confirmDeleteTodo() {
+    if (pendingDeleteId == null) return;
 
     try {
-        const response = await fetch(`${uri}/${id}`, {
+        const response = await fetch(`${uri}/${pendingDeleteId}`, {
             method: 'DELETE'
         });
 
         if (response.ok) {
+            closeDeleteModal();
             getTodos();
         } else {
             alert('删除失败');
@@ -195,19 +209,31 @@ async function updateTodo() {
 
 // 点击遮罩关闭弹窗
 document.addEventListener('click', (event) => {
-    const modal = document.getElementById('edit-modal');
-    if (event.target === modal) {
+    const editModal = document.getElementById('edit-modal');
+    const deleteModal = document.getElementById('delete-modal');
+
+    if (event.target === editModal) {
         closeEditModal();
+    }
+
+    if (event.target === deleteModal) {
+        closeDeleteModal();
     }
 });
 
 // ESC 关闭弹窗
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        const modal = document.getElementById('edit-modal');
-        if (!modal.classList.contains('d-none')) {
-            closeEditModal();
-        }
+    if (event.key !== 'Escape') return;
+
+    const editModal = document.getElementById('edit-modal');
+    const deleteModal = document.getElementById('delete-modal');
+
+    if (!editModal.classList.contains('d-none')) {
+        closeEditModal();
+    }
+
+    if (!deleteModal.classList.contains('d-none')) {
+        closeDeleteModal();
     }
 });
 
