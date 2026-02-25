@@ -1,0 +1,24 @@
+﻿@TodoApi_HostAddress = http://localhost:5203
+
+###
+GET http://localhost:5203/todoitems 
+Accept: application/json
+
+###
+
+POST {{TodoApi_HostAddress}}/todoitems
+Content-Type: application/json
+
+{
+  "name":"walk dog",
+  "isComplete":true
+}
+
+###
+
+GET http://localhost:5203/todoitems
+
+###
+GET {{TodoApi_HostAddress}}/todoitems
+
+###

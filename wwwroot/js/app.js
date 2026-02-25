@@ -1,0 +1,206 @@
+﻿const uri = 'http://localhost:5203/todo'; 
+let todos = [];
+
+// 页面加载时获取数据
+document.addEventListener('DOMContentLoaded', () => {
+    getTodos();
+});
+
+// 获取所有任务
+async function getTodos() {
+    try {
+        const response = await fetch(uri);
+        if (!response.ok) throw new Error('获取数据失败');
+        todos = await response.json();
+        displayTodos();
+    } catch (error) {
+        console.error('Error:', error);
+        alert('无法加载任务列表，请确保后端服务已启动。');
+    }
+}
+
+// 显示任务列表
+function displayTodos() {
+    const ul = document.getElementById('todo-list');
+    ul.innerHTML = '';
+
+    todos.forEach(todo => {
+        const li = document.createElement('li');
+
+        // 判断是否已完成
+        if (todo.isComplete) {
+            li.classList.add('completed');
+        }
+
+        // 生成 HTML 内容
+        li.innerHTML = `
+            <div class="todo-content">
+                <input type="checkbox" ${todo.isComplete ? 'checked' : ''} onchange="toggleComplete(${todo.id}, this.checked)">
+                <span class="todo-text">${escapeHtml(todo.name)}</span>
+            </div>
+            <div class="actions">
+                <button class="btn-edit" onclick="editMode(${todo.id}, '${escapeHtml(todo.name)}')">编辑</button>
+                <button class="btn-delete" onclick="deleteTodo(${todo.id})">删除</button>
+            </div>
+        `;
+
+        ul.appendChild(li);
+    });
+}
+
+// 添加任务
+async function addTodo() {
+    const input = document.getElementById('todo-input');
+    const name = input.value.trim();
+
+    if (!name) {
+        alert('请输入任务名称');
+        return;
+    }
+
+    const todo = {
+        name: name,
+        isComplete: false
+    };
+
+    try {
+        const response = await fetch(uri, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(todo)
+        });
+
+        if (response.ok) {
+            input.value = ''; // 清空输入框
+            getTodos(); // 刷新列表
+        } else {
+            alert('添加失败');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// 删除任务
+async function deleteTodo(id) {
+    if (!confirm('确定要删除吗？')) return;
+
+    try {
+        const response = await fetch(`${uri}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            getTodos();
+        } else {
+            alert('删除失败');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// 切换完成状态
+async function toggleComplete(id, isComplete) {
+    // 先在本地数组找到对应项，获取 name
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    const updatedTodo = {
+        name: todo.name,
+        isComplete: isComplete
+    };
+
+    try {
+        const response = await fetch(`${uri}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedTodo)
+        });
+
+        if (response.ok) {
+            getTodos();
+        } else {
+            alert('更新状态失败');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// 进入编辑模式 (填充输入框)
+function editMode(id, name) {
+    document.getElementById('todo-id').value = id;
+    document.getElementById('todo-input').value = name;
+
+    document.getElementById('btn-add').classList.add('hidden');
+    document.getElementById('btn-update').classList.remove('hidden');
+    document.getElementById('btn-cancel').classList.remove('hidden');
+
+    document.getElementById('todo-input').focus();
+}
+
+// 取消编辑
+function cancelEdit() {
+    document.getElementById('todo-id').value = '';
+    document.getElementById('todo-input').value = '';
+
+    document.getElementById('btn-add').classList.remove('hidden');
+    document.getElementById('btn-update').classList.add('hidden');
+    document.getElementById('btn-cancel').classList.add('hidden');
+}
+
+// 更新任务
+async function updateTodo() {
+    const id = document.getElementById('todo-id').value;
+    const name = document.getElementById('todo-input').value.trim();
+
+    if (!name) {
+        alert('名称不能为空');
+        return;
+    }
+
+    // 获取当前状态
+    const todo = todos.find(t => t.id == id);
+    if (!todo) return;
+
+    const updatedTodo = {
+        name: name,
+        isComplete: todo.isComplete
+    };
+
+    try {
+        const response = await fetch(`${uri}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedTodo)
+        });
+
+        if (response.ok) {
+            cancelEdit(); // 退出编辑模式
+            getTodos();   // 刷新列表
+        } else {
+            alert('更新失败');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// 防止 XSS 简单转义
+function escapeHtml(text) {
+    if (!text) return text;
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
