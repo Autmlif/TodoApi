@@ -18,13 +18,10 @@
                 </div>
 
                 <div class="card-body">
-                    <!-- 添加/编辑区域 -->
+                    <!-- 添加区域 -->
                     <div class="input-group mb-4">
                         <input type="text" id="todo-input" class="form-control" placeholder="输入任务名称..." aria-label="任务名称">
-                        <input type="hidden" id="todo-id">
                         <button id="btn-add" class="btn btn-success" type="button" onclick="addTodo()">添加</button>
-                        <button id="btn-update" class="btn btn-primary d-none" type="button" onclick="updateTodo()">保存</button>
-                        <button id="btn-cancel" class="btn btn-secondary d-none" type="button" onclick="cancelEdit()">取消</button>
                     </div>
 
                     <!-- 任务列表 -->
@@ -35,6 +32,32 @@
 
                 <div class="card-footer text-center text-muted small">
                     Powered by ASP.NET Core + Bootstrap 5
+                </div>
+            </div>
+
+            <!-- 编辑对话框 -->
+            <div id="edit-modal" class="modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+                <div class="modal-card">
+                    <h5 id="edit-modal-title" class="mb-3">编辑 Todo</h5>
+                    <input type="hidden" id="edit-todo-id">
+                    <input type="text" id="edit-todo-input" class="form-control mb-3" placeholder="输入任务名称..." aria-label="编辑任务名称">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" type="button" onclick="closeEditModal()">取消</button>
+                        <button class="btn btn-primary" type="button" onclick="updateTodo()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 删除确认对话框 -->
+            <div id="delete-modal" class="modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+                <div class="modal-card">
+                    <h5 id="delete-modal-title" class="mb-2">确认删除</h5>
+                    <p class="text-muted mb-3">确定要删除这个 Todo 吗？此操作不可撤销。</p>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" type="button" onclick="closeDeleteModal()">取消</button>
+                        <button class="btn btn-danger" type="button" onclick="confirmDeleteTodo()">删除</button>
+                    </div>
                 </div>
             </div>
 
