@@ -39,7 +39,7 @@ function displayTodos() {
                 <span class="todo-text">${escapeHtml(todo.name)}</span>
             </div>
             <div class="actions">
-                <button class="btn-edit" onclick="editMode(${todo.id}, '${escapeHtml(todo.name)}')">编辑</button>
+                <button class="btn-edit" onclick="editMode(${todo.id})">编辑</button>
                 <button class="btn-delete" onclick="deleteTodo(${todo.id})">删除</button>
             </div>
         `;
@@ -133,32 +133,30 @@ async function toggleComplete(id, isComplete) {
     }
 }
 
-// 进入编辑模式 (填充输入框)
-function editMode(id, name) {
-    document.getElementById('todo-id').value = id;
-    document.getElementById('todo-input').value = name;
+// 打开编辑弹窗
+function editMode(id) {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
 
-    document.getElementById('btn-add').classList.add('hidden');
-    document.getElementById('btn-update').classList.remove('hidden');
-    document.getElementById('btn-cancel').classList.remove('hidden');
+    document.getElementById('edit-todo-id').value = id;
+    document.getElementById('edit-todo-input').value = todo.name;
 
-    document.getElementById('todo-input').focus();
+    const modal = document.getElementById('edit-modal');
+    modal.classList.remove('d-none');
+    document.getElementById('edit-todo-input').focus();
 }
 
-// 取消编辑
-function cancelEdit() {
-    document.getElementById('todo-id').value = '';
-    document.getElementById('todo-input').value = '';
-
-    document.getElementById('btn-add').classList.remove('hidden');
-    document.getElementById('btn-update').classList.add('hidden');
-    document.getElementById('btn-cancel').classList.add('hidden');
+// 关闭编辑弹窗
+function closeEditModal() {
+    document.getElementById('edit-todo-id').value = '';
+    document.getElementById('edit-todo-input').value = '';
+    document.getElementById('edit-modal').classList.add('d-none');
 }
 
 // 更新任务
 async function updateTodo() {
-    const id = document.getElementById('todo-id').value;
-    const name = document.getElementById('todo-input').value.trim();
+    const id = Number(document.getElementById('edit-todo-id').value);
+    const name = document.getElementById('edit-todo-input').value.trim();
 
     if (!name) {
         alert('名称不能为空');
@@ -184,7 +182,7 @@ async function updateTodo() {
         });
 
         if (response.ok) {
-            cancelEdit(); // 退出编辑模式
+            closeEditModal(); // 关闭编辑弹窗
             getTodos();   // 刷新列表
         } else {
             alert('更新失败');
@@ -193,6 +191,25 @@ async function updateTodo() {
         console.error('Error:', error);
     }
 }
+
+
+// 点击遮罩关闭弹窗
+document.addEventListener('click', (event) => {
+    const modal = document.getElementById('edit-modal');
+    if (event.target === modal) {
+        closeEditModal();
+    }
+});
+
+// ESC 关闭弹窗
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('edit-modal');
+        if (!modal.classList.contains('d-none')) {
+            closeEditModal();
+        }
+    }
+});
 
 // 防止 XSS 简单转义
 function escapeHtml(text) {
