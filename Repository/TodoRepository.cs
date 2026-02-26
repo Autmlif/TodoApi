@@ -37,5 +37,15 @@ namespace TodoApi.Repository
             _db.Todos.Remove(todo);
             await _db.SaveChangesAsync();
         }
+
+        public async Task<List<Todo>> GetPagedAsync(int page, int pageSize)
+        {
+            return await _db.Todos.OrderByDescending(t => t.Priority).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _db.Todos.CountAsync();
+        }
     }
 }

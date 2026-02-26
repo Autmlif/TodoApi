@@ -46,7 +46,6 @@ public class Program
         app.MapControllers();
         app.UseCors("AllowAll");
         app.UseFileServer();
-        app.Logger.LogInformation("Starting the app");
         await app.RunAsync();
     }
 }

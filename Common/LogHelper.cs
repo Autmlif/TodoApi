@@ -28,7 +28,8 @@ namespace TodoApi.Common
 
         public static void SetConfig()
         {
-            var path = new FileInfo("log4net.config");
+            var config_path = Path.Combine(AppContext.BaseDirectory, "log4net.config");
+            var path = new FileInfo(config_path);
             log4net.Config.XmlConfigurator.Configure(path);
             logerror.Info("Enter application");
             loginfo.Info("Enter application");
