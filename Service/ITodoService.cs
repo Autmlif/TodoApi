@@ -2,7 +2,7 @@
 {
     public interface ITodoService
     {
-        Task<List<TodoItemDTO>> GetAllAsync();
+        Task<PagedResult<TodoItemDTO>> GetAllAsync(int page, int pageSize);
         Task<TodoItemDTO?> GetByIdAsync(int id);
         Task<TodoItemDTO> CreateAsync(TodoItemDTO dto);
         Task<bool> UpdateAsync(int id, TodoItemDTO dto);

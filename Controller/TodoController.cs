@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Printing;
 using TodoApi.Service;
 
 namespace TodoApi.Controller
@@ -16,9 +17,10 @@ namespace TodoApi.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
-            return Ok(await _service.GetAllAsync());
+            //return Ok(await _service.GetAllAsync());
+            return Ok(await _service.GetAllAsync(page, pageSize));
         }
 
         [HttpGet("{id}")]

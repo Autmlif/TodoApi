@@ -24,7 +24,7 @@ namespace TodoApi.Service
 
         public async Task<PagedResult<TodoItemDTO>> GetAllAsync(int page, int pageSize)
         {
-            var safePage = page <= 0 ? 1 : page;
+            var safePage = page <= 0 ? 1 : page;    
             var safePageSize = pageSize <= 0 ? 10 : pageSize;
             var todos = await _repository.GetPagedAsync(safePage, safePageSize);
             var total = await _repository.CountAsync();
@@ -51,7 +51,7 @@ namespace TodoApi.Service
             var entity = new Todo
             {
                 Name = dto.Name,
-                IsComplete = dto.IsComplete
+                IsComplete = dto.IsComplete,
                 Priority = dto.Priority
             };
 
@@ -81,5 +81,7 @@ namespace TodoApi.Service
             await _repository.DeleteAsync(todo);
             return true;
         }
+
+        
     }
 }
